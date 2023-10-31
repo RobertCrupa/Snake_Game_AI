@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "snake-game-ai"
+version = "0.1.0"
+description = "Simple snake game that will be played by a reinforcement learning agent"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pygame = "^2.5.2"
+torch = "^2.1.0"
+torchvision = "^0.16.0"
+matplotlib = "^3.8.0"
+ipython = "^8.17.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
