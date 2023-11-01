@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import random
+from collections import namedtuple
 
+import numpy as np
 import pygame
 from eunm import Enum
 
@@ -10,6 +12,8 @@ pygame.init()
 font = pygame.font.Font('arial.ttf', 25)
 
 # Initialise constants
+
+Point = namedtuple('Point', 'x, y')
 
 
 class Direction(Enum):
@@ -64,7 +68,7 @@ class SnakeGame:
         """
         self.direction = Direction.RIGHT
 
-        self.head = [self.w/2, self.h/2]
+        self.head = Point(self.w/2, self.h/2)
         self.snake = [
             self.head, [self.head[0]-BLOCK_SIZE, self.head[1]],
             [self.head[0]-2*BLOCK_SIZE, self.head[1]],
@@ -83,7 +87,7 @@ class SnakeGame:
             round(random.randrange(0, self.w-BLOCK_SIZE)/BLOCK_SIZE)
         y = BLOCK_SIZE * \
             round(random.randrange(0, self.h-BLOCK_SIZE)/BLOCK_SIZE)
-        self.food = [x, y]
+        self.food = Point(x, y)
 
         # Make sure food is not placed on the snake
         if self.food in self.snake:
@@ -161,3 +165,73 @@ class SnakeGame:
             return True
 
         return False
+
+    def _update_ui(self):
+        """
+        Update the game UI.
+        """
+
+        self.display.fill(Color.BLACK.value)
+
+        for pt in self.snake:
+            pygame.draw.rect(
+                self.display,
+                Color.GREEN.value,
+                pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE),
+            )
+
+            pygame.draw.rect(
+                self.display,
+                Color.WHITE.value,
+                pygame.Rect(pt.x+4, pt.y+4, 12, 12),
+            )
+
+        pygame.draw.rect(
+            self.display,
+            Color.RED.value,
+            pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE),
+        )
+
+        text = font.render(
+            'Score: ' + str(self.score),
+            True,
+            Color.WHITE.value,
+        )
+        self.display.blit(text, [0, 0])
+        pygame.display.flip()
+
+    def _move(self, action):
+
+        clock_wise = [
+            Direction.RIGHT, Direction.DOWN,
+            Direction.LEFT, Direction.UP,
+        ]
+        index = clock_wise.index(self.direction)
+
+        # Change direction based on action
+        if np.array_equal(action, [1, 0, 0]):
+            new_dir = clock_wise[index]  # no change
+        elif np.array_equal(action, [0, 1, 0]):
+            next_index = (index + 1) % 4
+            new_dir = clock_wise[next_index]  # Right turn r -> d -> l -> u
+        else:
+            next_index = (index - 1) % 4
+            new_dir = clock_wise[next_index]  # Left turn r -> u -> l -> d
+
+        # Update head position
+        self.direction = new_dir
+
+        x = self.head.x
+        y = self.head.y
+
+        match self.direction:
+            case Direction.RIGHT:
+                x += BLOCK_SIZE
+            case Direction.LEFT:
+                x -= BLOCK_SIZE
+            case Direction.DOWN:
+                y += BLOCK_SIZE
+            case Direction.UP:
+                y -= BLOCK_SIZE
+
+        self.head = Point(x, y)
