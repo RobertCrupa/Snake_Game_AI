@@ -201,6 +201,13 @@ class SnakeGame:
         pygame.display.flip()
 
     def _move(self, action):
+        """
+        Move the snake in the given direction.
+
+        Parameters:
+        action [int]: The action to take.
+                        [1,0,0] = NO MOVE, [0,1,0] = RIGHT, [0,0,1] = LEFT
+        """
 
         clock_wise = [
             Direction.RIGHT, Direction.DOWN,
