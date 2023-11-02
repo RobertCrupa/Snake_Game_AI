@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from collections import deque
-# from game import SnakeGameAI, Direction, Point
+
+from game import SnakeGame
 
 MAX_MEMORY = 100_000  # Maximum number of experiences we are storing
 BATCH_SIZE = 1000  # Number of experiences we use for training per batch
@@ -35,7 +36,47 @@ class Agent:
 
 
 def train():
-    pass
+    # Will be used to plot progress
+    # plot_scores = []
+    # plot_mean_scores = []
+    # total_score = 0
+    record = 0
+    agent = Agent()
+
+    game = SnakeGame()
+
+    while (True):
+        # Get old state
+        state_old = agent.get_state(game)
+
+        # Get move
+        next_move = agent.get_action(state_old)
+
+        # Perform move and get new state
+        reward, done, score = game.play_step(next_move)
+        state_new = agent.get_state(game)
+
+        # Train short memory
+        agent.train_short_memory(
+            state_old, next_move, reward, state_new, done,
+        )
+
+        # Remember
+        agent.remember(state_old, next_move, reward, state_new, done)
+
+        if done:
+            # Train long memory, plot result
+            game.reset()
+            agent.number_of_games += 1
+            agent.train_long_memory()
+
+            record = max(score, record)
+
+            print(
+                'Game', agent.number_of_games,
+                'Score', score,
+                'Record:', record,
+            )
 
 
 if __name__ == '__main__':
