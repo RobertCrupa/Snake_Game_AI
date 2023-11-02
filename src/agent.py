@@ -9,6 +9,8 @@ from game import BLOCK_SIZE
 from game import Direction
 from game import Point
 from game import SnakeGame
+from model import Linear_QNet
+from model import QTrainer
 
 MAX_MEMORY = 100_000  # Maximum number of experiences we are storing
 BATCH_SIZE = 1000  # Number of experiences we use for training per batch
@@ -20,10 +22,10 @@ class Agent:
     def __init__(self):
         self.number_of_games = 0
         self.epsilon = 0  # Randomness
-        self.gamma = 0  # Discount rate
+        self.gamma = 0.9  # Discount rate
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = None  # TODO: Initialize model
-        self.trainer = None  # TODO: Initialize trainer
+        self.model = Linear_QNet(11, 256, 3)
+        self.trainer = QTrainer(model=self.model, lr=LR, gamma=self.gamma)
         pass
 
     def get_state(self, game):
@@ -143,7 +145,7 @@ class Agent:
             final_move[move] = 1
         else:
             state0 = torch.tensor(state, dtype=torch.float)
-            prediction = self.model.predict(state0)
+            prediction = self.model(state0)
             move = torch.argmax(prediction).item()
             final_move[move] = 1
 
