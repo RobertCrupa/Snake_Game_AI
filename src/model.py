@@ -10,6 +10,15 @@ import torch.optim as optim
 
 class Linear_QNet(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
+        """
+        Initialize the Linear_QNet class.
+
+        Parameters:
+        input_size (int): The input size.
+        hidden_size (int): The hidden size.
+        output_size (int): The output size.
+        """
+
         super().__init__()
         self.linear1 = nn.Linear(input_size, hidden_size)
         self.linear2 = nn.Linear(hidden_size, output_size)
@@ -48,6 +57,14 @@ class Linear_QNet(nn.Module):
 
 class QTrainer:
     def __init__(self, model, lr, gamma) -> None:
+        """
+        Initialize the QTrainer class.
+
+        Parameters:
+        model (pytorch model): The model to train.
+        lr (float): The learning rate.
+        gamma (float): The discount rate.
+        """
         self.lr = lr
         self.model = model
         self.gamma = gamma

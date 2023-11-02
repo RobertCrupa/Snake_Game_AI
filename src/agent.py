@@ -21,6 +21,10 @@ LR = 0.001  # Learning rate
 class Agent:
 
     def __init__(self):
+        """
+        Initialize the Agent class.
+        """
+
         self.number_of_games = 0
         self.epsilon = 0  # Randomness
         self.gamma = 0.9  # Discount rate
@@ -154,6 +158,10 @@ class Agent:
 
 
 def train():
+    """
+    Train the agent.
+    """
+
     plot_scores = []
     plot_mean_scores = []
     total_score = 0
@@ -180,7 +188,6 @@ def train():
             state_old, next_move, reward, state_new, done,
         )
 
-        # Remember
         agent.remember(state_old, next_move, reward, state_new, done)
 
         if done:
