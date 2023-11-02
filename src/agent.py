@@ -46,6 +46,7 @@ def train():
     game = SnakeGame()
 
     while (True):
+
         # Get old state
         state_old = agent.get_state(game)
 
