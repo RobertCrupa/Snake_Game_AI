@@ -9,11 +9,11 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 pygame = "^2.5.2"
-torchvision = "^0.16.0"
 matplotlib = "^3.8.0"
 ipython = "^8.17.2"
-torch = "^2.1.0"
+torch = ">=2.0.0, !=2.0.1, !=2.1.0"
 pre-commit = "^3.5.0"
+enum34 = "^1.1.10"
 
 
 

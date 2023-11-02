@@ -11,6 +11,7 @@ from game import Point
 from game import SnakeGame
 from model import Linear_QNet
 from model import QTrainer
+from plotter import plot
 
 MAX_MEMORY = 100_000  # Maximum number of experiences we are storing
 BATCH_SIZE = 1000  # Number of experiences we use for training per batch
@@ -153,11 +154,11 @@ class Agent:
 
 
 def train():
-    # Will be used to plot progress
-    # plot_scores = []
-    # plot_mean_scores = []
-    # total_score = 0
+    plot_scores = []
+    plot_mean_scores = []
+    total_score = 0
     record = 0
+
     agent = Agent()
 
     game = SnakeGame()
@@ -197,7 +198,12 @@ def train():
                 'Record:', record,
             )
 
-            # TODO: plot progress
+            plot_scores.append(score)
+            total_score += score
+            mean_score = total_score / agent.number_of_games
+            plot_mean_scores.append(mean_score)
+
+            plot(plot_scores, plot_mean_scores)
 
 
 if __name__ == '__main__':
