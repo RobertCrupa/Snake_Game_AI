@@ -19,11 +19,22 @@ class Agent:
         self.number_of_games = 0
         self.epsilon = 0  # Randomness
         self.gamma = 0  # Discount rate
-        self.memore = deque(maxlen=MAX_MEMORY)
-        # TODO: Initialize model
+        self.memory = deque(maxlen=MAX_MEMORY)
+        self.model = None  # TODO: Initialize model
+        self.trainer = None  # TODO: Initialize trainer
         pass
 
     def get_state(self, game):
+        """
+        Gets the state of the game.
+
+        Parameters:
+        game (SnakeGame): The game instance.
+
+        Returns:
+        state (np.array): The state of the game.
+        """
+
         head = game.snake[0]
 
         # Points around the head
@@ -73,14 +84,16 @@ class Agent:
 
         return np.array(state, dtype=int)
 
-    def remember(Self, state, action, reward, next_state, done):
-        pass
+    def remember(self, state, action, reward, next_state, done):
+        self.memory.append(
+            (state, action, reward, next_state, done),
+        )
 
     def train_long_memory(self):
         pass
 
     def train_short_memory(self, state, action, reward, next_state, done):
-        pass
+        self.trainer.train_step(state, action, reward, next_state, done)
 
     def get_action(self, state):
         pass
