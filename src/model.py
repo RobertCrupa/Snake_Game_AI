@@ -5,6 +5,7 @@ import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.optim as optim
 
 
 class Linear_QNet(nn.Module):
@@ -43,3 +44,15 @@ class Linear_QNet(nn.Module):
 
         file_name = os.path.join(model_folder_path, file_name)
         torch.save(self.state_dict(), file_name)
+
+
+class QTrainer:
+    def __init__(self, model, lr, gamma) -> None:
+        self.lr = lr
+        self.model = model
+        self.gamma = gamma
+        self.optimizer = optim.Adam(model.parameters(), lr=self.lr)
+        self.criterion = nn.MSELoss()
+
+    def train_step(self, state, action, reward, next_state, done):
+        pass
