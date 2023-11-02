@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import random
 from collections import namedtuple
+from enum import Enum
 
 import numpy as np
 import pygame
-from eunm import Enum
 
 # Initialize pygame
 pygame.init()
@@ -70,8 +70,9 @@ class SnakeGame:
 
         self.head = Point(self.w/2, self.h/2)
         self.snake = [
-            self.head, [self.head[0]-BLOCK_SIZE, self.head[1]],
-            [self.head[0]-2*BLOCK_SIZE, self.head[1]],
+            self.head,
+            Point(self.head.x-BLOCK_SIZE, self.head.y),
+            Point(self.head.x-(2*BLOCK_SIZE), self.head.y),
         ]
 
         self.score = 0
@@ -122,7 +123,7 @@ class SnakeGame:
         game_over = False
 
         # collisions and endless loops end the game
-        if self._is_collision() or self.frame_iteration > 100*len(self.snake):
+        if self.is_collision() or self.frame_iteration > 100*len(self.snake):
             game_over = True
             reward = -10
             return reward, game_over, self.score
