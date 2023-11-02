@@ -55,4 +55,46 @@ class QTrainer:
         self.criterion = nn.MSELoss()
 
     def train_step(self, state, action, reward, next_state, done):
-        pass
+        """
+        Performs a training step.
+
+        Parameters:
+        state (torch.tensor): The current state.
+        action (torch.tensor): The action taken.
+        reward (torch.tensor): The reward received.
+        next_state (torch.tensor): The next state.
+        done (bool): Whether the episode is done or not.
+        """
+
+        state = torch.tensor(state, dtype=torch.float)
+        next_state = torch.tensor(next_state, dtype=torch.float)
+        action = torch.tensor(action, dtype=torch.long)
+        reward = torch.tensor(reward, dtype=torch.float)
+
+        if len(state.shape) == 1:
+            # Add batch dimension for single step
+            state = torch.unsqueeze(state, 0)
+            next_state = torch.unsqueeze(next_state, 0)
+            action = torch.unsqueeze(action, 0)
+            reward = torch.unsqueeze(reward, 0)
+            done = (done,)
+
+        # 1: predicted Q values with current state
+        pred = self.model(state)
+        target = pred.clone()
+
+        # 2: Iterate over the batch
+        for idx in range(len(done)):
+            Q_new = reward[idx]
+            if not done[idx]:
+                Q_new = reward[idx] + self.gamma * torch.max(
+                    self.model(next_state[idx]),
+                )
+
+            target[idx][torch.argmax(action[idx]).item()] = Q_new
+
+        # 3: Backpropagation
+        self.optimizer.zero_grad()  # Reset the gradients
+        loss = self.criterion(target, pred)  # Calculate the loss
+        loss.backward()  # Perform backpropagation
+        self.optimizer.step()  # Update the weights
