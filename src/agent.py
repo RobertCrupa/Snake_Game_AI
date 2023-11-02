@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import random
 from collections import deque
 
 import numpy as np
+import torch
 from game import BLOCK_SIZE
 from game import Direction
 from game import Point
@@ -85,18 +87,67 @@ class Agent:
         return np.array(state, dtype=int)
 
     def remember(self, state, action, reward, next_state, done):
+        """
+        Add the state, action, reward, next state, and done to memory.
+
+        Parameters:
+        state (np.array): The state of the game.
+        action (int): The action to take.
+        reward (int): The reward for the action.
+        next_state (np.array): The next state of the game.
+        done (bool): Whether the game is done or not.
+        """
+
         self.memory.append(
             (state, action, reward, next_state, done),
         )
 
     def train_long_memory(self):
-        pass
+        """
+        Train the model using the long memory (many steps).
+        """
+
+        if len(self.memory) > BATCH_SIZE:  # Too many memories, sample randomly
+            mini_sample = random.sample(self.memory, BATCH_SIZE)
+        else:
+            mini_sample = self.memory
+
+        # Unzip tuple into separate lists
+        states, actions, rewards, next_states, dones = zip(*mini_sample)
+        self.trainer.train_step(states, actions, rewards, next_states, dones)
 
     def train_short_memory(self, state, action, reward, next_state, done):
+        """
+        Train the model using the short memory (single step).
+        """
+
         self.trainer.train_step(state, action, reward, next_state, done)
 
     def get_action(self, state):
-        pass
+        """
+        Get the action to take. Random action or predicted action.
+
+        Parameters:
+        state (np.array): The state of the game.
+
+        Returns:
+        final_move (list): The action to take.
+        """
+
+        self.epsilon = 80 - self.number_of_games
+        final_move = [0, 0, 0]
+
+        if random.randint(0, 200) < self.epsilon:
+            # Take random action
+            move = random.randint(0, 2)
+            final_move[move] = 1
+        else:
+            state0 = torch.tensor(state, dtype=torch.float)
+            prediction = self.model.predict(state0)
+            move = torch.argmax(prediction).item()
+            final_move[move] = 1
+
+        return final_move
 
 
 def train():
